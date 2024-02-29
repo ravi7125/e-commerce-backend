@@ -1,4 +1,12 @@
 {
-  "Welcome": "Bienvenido",
-  "A brand new app.": "Una nueva aplicación."
+  "ACCESS_DENIED": "Access denied. No token provided",
+  "INVALID_TOKEN": "Token is not valid",
+  "USER_NOT_FOUND": "User is not found",
+  "NOT_AUTHORIZED": "You are not authorized!",
+  "USER_ALREADY_EXISTS": "User with this email already exists",
+  "USER_REGISTER": "User registered successfully",
+  "PASSWORD_VALIDATE": "Please enter correct password",
+  "USER_LOGIN": "User logged in successfully",
+  "SuccessTrue": true,
+  "SuccessFalse": false
 }

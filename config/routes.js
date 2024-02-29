@@ -37,8 +37,8 @@ module.exports.routes = {
      'GET /api/v1/product/search/:keyword': 'ProductController.search',
 
      // Cart Routes 
-     'GET /api/v1/cart/:userId': 'CartController.getCart',
      'POST /api/v1/cart/create': 'CartController.create',
+     'GET /api/v1/cart/:userId': 'CartController.getCart',
      'POST /api/v1/cart/add-to-cart': 'CartController.addToCart',
      'DELETE /api/v1/cart/remove-from-cart': 'CartController.removeFromCart',
 

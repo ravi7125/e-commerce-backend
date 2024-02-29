@@ -52,7 +52,7 @@ module.exports.datastores = {
     // url: 'mysql://user:password@host:port/database',
 
     adapter: 'sails-mongo',
-    url: 'mongodb+srv://userDB:user-123@cluster0.v0jsjgo.mongodb.net/Click-N-Buy-DB',
+    url: process.env.MONGO_URL,
 
    // mongodb+srv://userDB:user-123@cluster0.v0jsjgo.mongodb.net/
 

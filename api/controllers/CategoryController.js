@@ -5,7 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const slugify = require('slugify');
+
+const { slugify, HTTP_STATUS } = require('../../config/constants')
 
 module.exports = {
 
@@ -14,12 +15,12 @@ module.exports = {
             const name = req.body.name;
 
             if (!name) {
-                return res.status(401).send({ message: "Category name is required" });
+                return res.status(HTTP_STATUS.BAD_REQUEST).send({ message: "Category name is required" });
             }
             const existingCategory = await Category.findOne({ name: name });
 
             if (existingCategory) {
-                return res.status(200).send({
+                return res.status(HTTP_STATUS.SUCCESS).send({
                     success: false,
                     message: "Category Already Exists",
                     existingCategory
@@ -28,13 +29,13 @@ module.exports = {
 
             const category = await Category.create({ name, slug: slugify(name) })
 
-            res.status(201).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "New category created",
                 category,
             });
         } catch (error) {
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 error: error.message,
                 message: "Error in Category",
@@ -48,7 +49,7 @@ module.exports = {
             const category = await Category.findOne({ id });
 
             if (!category) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: false,
                     message: "Category Not Found",
                 });
@@ -56,14 +57,14 @@ module.exports = {
 
             const updatedCategory = await Category.update({ name: category.name, slug: slugify(category.name) }).set({ name: name, slug: slugify(name) }).fetch()
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 messsage: "Category Updated Successfully",
                 updatedCategory,
             });
         } catch (error) {
             console.log(error);
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error while updating category",
                 error: error.message,
@@ -74,14 +75,14 @@ module.exports = {
     find: async (req, res) => {
         try {
             const category = await Category.find({});
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "All Categories List",
                 category,
             });
         } catch (error) {
             console.log(error);
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error while getting all categories",
                 error: error.message,
@@ -95,13 +96,13 @@ module.exports = {
             const category = await Category.findOne({ id });
 
             if (!category) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: false,
                     message: "Category Not Found",
                 });
             }
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "Category Fetched Successfully",
                 category,
@@ -109,7 +110,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error while getting Single Category",
                 error: error.message,
@@ -124,7 +125,7 @@ module.exports = {
             const findCategory = await Category.findOne({ id });
 
             if (!findCategory) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: false,
                     message: "Category Not Found",
                 });
@@ -132,7 +133,7 @@ module.exports = {
 
             const deletedCategory = await Category.destroy({ id }).fetch();
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "Categry Deleted Successfully",
                 deletedCategory
@@ -140,7 +141,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "error while deleting category",
                 error: error.message,

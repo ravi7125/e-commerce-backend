@@ -5,8 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const multer = require('multer')
-const slugify = require('slugify')
+const { slugify, HTTP_STATUS } = require('../../config/constants')
+
 
 module.exports = {
 
@@ -15,7 +15,7 @@ module.exports = {
             const { name, description, price, quantity, category } = req.body;
 
             if (!name || !description || !price || !quantity || !category) {
-                return res.status(400).send({ error: "All fields are required." });
+                return res.status(HTTP_STATUS.BAD_REQUEST).send({ error: "All fields are required." });
             }
 
             const uploadedFiles = await new Promise((resolve, reject) => {
@@ -31,7 +31,7 @@ module.exports = {
             });
 
             if (!uploadedFiles || uploadedFiles.length === 0) {
-                return res.status(400).send({ error: "No file uploaded." });
+                return res.status(HTTP_STATUS.BAD_REQUEST).send({ error: "No file uploaded." });
             }
 
             const photoFilename = uploadedFiles[0].fd;
@@ -45,7 +45,7 @@ module.exports = {
             const existingProduct = await Product.findOne({ name });
 
             if (existingProduct) {
-                return res.status(400).send({
+                return res.status(HTTP_STATUS.BAD_REQUEST).send({
                     success: false,
                     message: "Product name already exists.",
                     existingProduct
@@ -62,13 +62,13 @@ module.exports = {
                 photo: fileName,
             }).fetch();
 
-            res.status(201).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "New product created successfully.",
                 product,
             });
         } catch (error) {
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error in creating product.",
                 error: error.message,
@@ -81,14 +81,14 @@ module.exports = {
             const products = await Product
                 .find({})
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 countTotal: products.length,
                 message: "All Products",
                 products: products,
             });
         } catch (error) {
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error in getting products",
                 error: error.message,
@@ -102,13 +102,13 @@ module.exports = {
                 .findOne({ slug: req.params.slug });
 
             if (!product) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: false,
                     message: "Product Not Found",
                 })
             }
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "Single Product Fetched",
                 product,
@@ -116,7 +116,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Eror while getitng single product",
                 error: error.message,
@@ -139,13 +139,13 @@ module.exports = {
             .limit(limit);
     
             if(products.length <= 0){
-                res.status(200).send({
+                res.status(HTTP_STATUS.SUCCESS).send({
                     success: true,
                     message: "No Products Found At This Page",
                 });
             }
 
-            return res.status(200).send({
+            return res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: `${products.length} Products Fetched At Page ${page}`,
                 users
@@ -162,12 +162,12 @@ module.exports = {
             const product = await Product.find({ id: req.params.pid }).select("photo")
 
             if (product.photo.photo) {
-                res.status(200).send(product.photo.photo)
+                res.status(HTTP_STATUS.SUCCESS).send(product.photo.photo)
             }
 
         } catch (error) {
             console.log(error);
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error while getting photo",
                 error,
@@ -178,13 +178,13 @@ module.exports = {
     delete: async (req, res) => {
         try {
             await Product.destroy({ id: req.params.pid });
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "Product Deleted successfully",
             });
         } catch (error) {
             console.log(error);
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error while deleting product",
                 error,
@@ -196,14 +196,14 @@ module.exports = {
         try {
             const total = await Product.find({});
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 total: total.length,
                 allProducts: total,
             });
         } catch (error) {
             console.log(error);
-            res.status(400).send({
+            res.status(HTTP_STATUS.BAD_REQUEST).send({
                 message: "Error in product count",
                 error: error.message,
                 success: false,
@@ -226,7 +226,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-            res.status(400).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error In Search Product API",
                 error: error.message,

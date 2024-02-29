@@ -6,8 +6,9 @@
  */
 
 
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+
+
+const { bcrypt, jwt, HTTP_STATUS } = require('../../config/constants')
 
 module.exports = {
 
@@ -20,7 +21,7 @@ module.exports = {
 
 
             if (!username || !email || !password || !answer || !address) {
-                return res.send({
+                return res.status(HTTP_STATUS.BAD_REQUEST).send({
                     message: "All Fields are requied to fill"
                 })
             }
@@ -28,7 +29,7 @@ module.exports = {
             const existingUser = await User.findOne({ email })
 
             if (existingUser) {
-                return res.status(401).send({
+                return res.status(HTTP_STATUS.ALREADY_EXISTS).send({
                     success: false,
                     message: "Email is already registered!, Please Login",
                 })
@@ -36,14 +37,14 @@ module.exports = {
 
             const user = await User.create({ username, email, password: hashedPassword, answer, role, address })
 
-            return res.status(200).send({
+            return res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "Sign Up Successfully",
                 user
             })
 
         } catch (error) {
-            return res.status(500).send({
+            return res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Sign Up Failed!",
                 error: error.message,
@@ -61,7 +62,7 @@ module.exports = {
             const existingUser = await User.findOne({ email })
 
             if (!existingUser) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: false,
                     message: "Email is Not Registered, Please Sign Up!",
                 })
@@ -71,7 +72,7 @@ module.exports = {
             const match = await bcrypt.compare(password, existingUser.password)
 
             if (!match) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: false,
                     message: "Invalid Password",
                 })
@@ -79,7 +80,7 @@ module.exports = {
 
             const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' })
 
-            return res.status(200).send({
+            return res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "Login Successfully",
                 user: {
@@ -92,7 +93,7 @@ module.exports = {
 
 
         } catch (error) {
-            return res.status(500).send({
+            return res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error in Login!",
                 error: error.message,
@@ -117,7 +118,7 @@ module.exports = {
             const user = await User.findOne({ email, answer })
 
             if (!user) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.BAD_REQUEST).send({
                     success: false,
                     message: "Wrong email or answer",
                 })
@@ -127,14 +128,14 @@ module.exports = {
 
             const newData = await User.update({ password: user.password }).set({ password: hashedPassword })
 
-            return res.status(200).send({
+            return res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "Password Reset Successfully",
             })
 
 
         } catch (error) {
-            return res.status(500).send({
+            return res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Something Went Wrong!",
                 error
@@ -149,14 +150,14 @@ module.exports = {
 
             const users = await User.find({})
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 countTotal: users.length,
                 message: "All Users",
                 users,
             });
         } catch (error) {
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error in getting users",
                 error: error.message,
@@ -172,20 +173,20 @@ module.exports = {
             const user = await User.findOne({ id });
 
             if (!user) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: false,
                     message: "User Not Found",
                 });
             }
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "Fetched User",
                 user,
             });
 
         } catch (error) {
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "Error in getting user",
                 error: error.message,
@@ -209,13 +210,13 @@ module.exports = {
             .limit(limit);
     
             if(users.length <= 0){
-                res.status(200).send({
+                res.status(HTTP_STATUS.SUCCESS).send({
                     success: true,
                     message: "No Users Found At This Page",
                 });
             }
 
-            return res.status(200).send({
+            return res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: `${users.length} Users Fetched At Page ${page}`,
                 users
@@ -234,7 +235,7 @@ module.exports = {
             const findUser = await User.findOne({ id });
 
             if (!findUser) {
-                return res.status(404).send({
+                return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: false,
                     message: "User Not Found",
                 });
@@ -242,14 +243,14 @@ module.exports = {
 
             const deletedUser = await User.destroy({ id }).fetch();
 
-            res.status(200).send({
+            res.status(HTTP_STATUS.SUCCESS).send({
                 success: true,
                 message: "User Deleted Successfully",
                 deletedUser
             });
 
         } catch (error) {
-            res.status(500).send({
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: false,
                 message: "error while deleting user",
                 error: error.message,
