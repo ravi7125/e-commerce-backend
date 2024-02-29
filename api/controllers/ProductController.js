@@ -134,11 +134,11 @@ module.exports = {
     
         try {
 
-            const users = await Product.find({})
+            const products = await Product.find({})
             .skip(skip)
             .limit(limit);
     
-            if(users.length <= 0){
+            if(products.length <= 0){
                 res.status(200).send({
                     success: true,
                     message: "No Products Found At This Page",
@@ -147,7 +147,7 @@ module.exports = {
 
             return res.status(200).send({
                 success: true,
-                message: `${users.length} Products Fetched At Page ${page}`,
+                message: `${products.length} Products Fetched At Page ${page}`,
                 users
             });
 

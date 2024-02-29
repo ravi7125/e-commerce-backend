@@ -193,6 +193,40 @@ module.exports = {
         }
     },
 
+
+    listUsers: async (req, res) => {
+
+        const page = req.query.page || 1; // Current page number
+        const perPage = req.query.perPage || 1; // Number of items per page
+    
+        const skip = (page - 1) * perPage; // Calculate the number of items to skip
+        const limit = perPage; // Limit the number of items per page
+    
+        try {
+
+            const users = await User.find({})
+            .skip(skip)
+            .limit(limit);
+    
+            if(users.length <= 0){
+                res.status(200).send({
+                    success: true,
+                    message: "No Users Found At This Page",
+                });
+            }
+
+            return res.status(200).send({
+                success: true,
+                message: `${users.length} Users Fetched At Page ${page}`,
+                users
+            });
+
+        } catch (error) {
+            return res.serverError(error);
+        }
+    },
+
+
     delete: async (req, res) => {
         try {
             const id = req.params.id;

@@ -16,6 +16,7 @@ module.exports.routes = {
      'POST /api/v1/auth/forgot-password': 'UserController.forgot',
      'GET /api/v1/auth/get-users': 'UserController.find',
      'GET /api/v1/auth/get-users/:id': 'UserController.findOne',
+     'GET /api/v1/auth/list-users': 'UserController.listUsers',
      'DELETE /api/v1/auth/delete-user/:id': 'UserController.delete',
      
      // Category Routes
