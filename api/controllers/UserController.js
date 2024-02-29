@@ -77,7 +77,7 @@ module.exports = {
                 })
             }
 
-            const token = jwt.sign({ _id: existingUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' })
+            const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' })
 
             return res.status(200).send({
                 success: true,

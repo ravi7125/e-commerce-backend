@@ -28,6 +28,7 @@ module.exports.routes = {
      // Product Routes
      'POST /api/v1/product/create-product': 'ProductController.create',
      'GET /api/v1/product/get-product': 'ProductController.find',
+     'GET /api/v1/product/list-product': 'ProductController.listProducts',
      'GET /api/v1/product/get-product/:slug': 'ProductController.findOne',
      'GET /api/v1/product/product-photo/:pid': 'ProductController.getPhoto',
      'DELETE /api/v1/product/delete-product/:pid': 'ProductController.delete',
