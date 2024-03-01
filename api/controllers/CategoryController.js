@@ -21,8 +21,8 @@ module.exports = {
 
             if (existingCategory) {
                 return res.status(HTTP_STATUS.SUCCESS).send({
-                    success: false,
-                    message: "Category Already Exists",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('ALREADY_EXISTS_CATEGORY_NAME'),
                     existingCategory
                 });
             }
@@ -30,15 +30,15 @@ module.exports = {
             const category = await Category.create({ name, slug: slugify(name) })
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "New category created",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('CATEGORY_CREATED'),
                 category,
             });
         } catch (error) {
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
+                success: req.i18n.__('SUCCESS_FALSE'),
                 error: error.message,
-                message: "Error in Category",
+                message: req.i18n.__('SERVER_ERROR_CATEGORY'),
             });
         }
     },
@@ -50,23 +50,23 @@ module.exports = {
 
             if (!category) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: false,
-                    message: "Category Not Found",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('CATEGORY_NOT_FOUND'),
                 });
             }
 
             const updatedCategory = await Category.update({ name: category.name, slug: slugify(category.name) }).set({ name: name, slug: slugify(name) }).fetch()
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                messsage: "Category Updated Successfully",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                messsage: req.i18n.__('CATEGORY_UPDATED'),
                 updatedCategory,
             });
         } catch (error) {
             console.log(error);
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error while updating category",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_CATEGORY'),
                 error: error.message,
             });
         }
@@ -76,15 +76,15 @@ module.exports = {
         try {
             const category = await Category.find({});
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "All Categories List",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('FETCHED_CATEGORY'),
                 category,
             });
         } catch (error) {
             console.log(error);
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error while getting all categories",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_CATEGORY'),
                 error: error.message,
             });
         }
@@ -97,22 +97,22 @@ module.exports = {
 
             if (!category) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: false,
-                    message: "Category Not Found",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('CATEGORY_NOT_FOUND'),
                 });
             }
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "Category Fetched Successfully",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('SINGLE_CATEGORY'),
                 category,
             });
 
         } catch (error) {
             console.log(error);
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error while getting Single Category",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_CATEGORY'),
                 error: error.message,
             });
         }
@@ -126,24 +126,24 @@ module.exports = {
 
             if (!findCategory) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: false,
-                    message: "Category Not Found",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('CATEGORY_NOT_FOUND'),
                 });
             }
 
-            const deletedCategory = await Category.destroy({ id }).fetch();
+            const deletedCategory = await Category.destroyOne({ id }).fetch();
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "Categry Deleted Successfully",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('CATEGORY_DELETED'),
                 deletedCategory
             });
 
         } catch (error) {
             console.log(error);
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "error while deleting category",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_CATEGORY'),
                 error: error.message,
             });
         }

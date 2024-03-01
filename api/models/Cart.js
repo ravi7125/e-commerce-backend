@@ -14,8 +14,8 @@ module.exports = {
       required: true
     },
     products: {
-      type: 'json', 
-      defaultsTo: [] 
+      collection: 'Product',
+      via: 'cart'
     }
 
   },

@@ -54,7 +54,6 @@ module.exports.datastores = {
     adapter: 'sails-mongo',
     url: process.env.MONGO_URL,
 
-   // mongodb+srv://userDB:user-123@cluster0.v0jsjgo.mongodb.net/
 
   },
 

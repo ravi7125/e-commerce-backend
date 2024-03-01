@@ -22,7 +22,7 @@ module.exports = {
 
             if (!username || !email || !password || !answer || !address) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).send({
-                    message: "All Fields are requied to fill"
+                    message: req.i18n.__('REQUIRED')
                 })
             }
 
@@ -30,23 +30,23 @@ module.exports = {
 
             if (existingUser) {
                 return res.status(HTTP_STATUS.ALREADY_EXISTS).send({
-                    success: false,
-                    message: "Email is already registered!, Please Login",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('ALREADY_EXISTS_EMAIL'),
                 })
             }
 
             const user = await User.create({ username, email, password: hashedPassword, answer, role, address })
 
             return res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "Sign Up Successfully",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('SIGNUP'),
                 user
             })
 
         } catch (error) {
             return res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Sign Up Failed!",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_USER'),
                 error: error.message,
             })
 
@@ -63,8 +63,8 @@ module.exports = {
 
             if (!existingUser) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: false,
-                    message: "Email is Not Registered, Please Sign Up!",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('USER_NOT_FOUND'),
                 })
 
             }
@@ -73,16 +73,16 @@ module.exports = {
 
             if (!match) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: false,
-                    message: "Invalid Password",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('INVALID_PASSWORD'),
                 })
             }
 
             const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' })
 
             return res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "Login Successfully",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('LOGIN'),
                 user: {
                     id: existingUser.id,
                     username: existingUser.username,
@@ -94,8 +94,8 @@ module.exports = {
 
         } catch (error) {
             return res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error in Login!",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_USER'),
                 error: error.message,
             })
 
@@ -111,7 +111,7 @@ module.exports = {
 
             if (!email || !answer || !newPassword) {
                 return res.send({
-                    message: "All Fields are Requied!"
+                    message: req.i18n.__('REQUIRED')
                 })
             }
 
@@ -119,8 +119,8 @@ module.exports = {
 
             if (!user) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).send({
-                    success: false,
-                    message: "Wrong email or answer",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('INVALID_CREDENTIALS')
                 })
             }
 
@@ -129,15 +129,15 @@ module.exports = {
             const newData = await User.update({ password: user.password }).set({ password: hashedPassword })
 
             return res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "Password Reset Successfully",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('PASSWORD_RESETED'),
             })
 
 
         } catch (error) {
             return res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Something Went Wrong!",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_USER'),
                 error
             })
 
@@ -151,15 +151,15 @@ module.exports = {
             const users = await User.find({})
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
+                success: req.i18n.__('SUCCESS_TRUE'),
                 countTotal: users.length,
-                message: "All Users",
+                message: req.i18n.__('FETCHED_USRES'),
                 users,
             });
         } catch (error) {
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error in getting users",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_USER'),
                 error: error.message,
             });
         }
@@ -174,21 +174,21 @@ module.exports = {
 
             if (!user) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: false,
-                    message: "User Not Found",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('USER_NOT_FOUND'),
                 });
             }
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "Fetched User",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('SINGLE_USER'),
                 user,
             });
 
         } catch (error) {
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error in getting user",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_USER'),
                 error: error.message,
             });
         }
@@ -211,14 +211,14 @@ module.exports = {
     
             if(users.length <= 0){
                 res.status(HTTP_STATUS.SUCCESS).send({
-                    success: true,
-                    message: "No Users Found At This Page",
+                    success: req.i18n.__('SUCCESS_TRUE'),
+                    message: req.i18n.__('USER_NOT_FOUND_PAGE'),
                 });
             }
 
             return res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: `${users.length} Users Fetched At Page ${page}`,
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('FETCHED_USERS'),
                 users
             });
 
@@ -236,23 +236,23 @@ module.exports = {
 
             if (!findUser) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: false,
-                    message: "User Not Found",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('USER_NOT_FOUND'),
                 });
             }
 
-            const deletedUser = await User.destroy({ id }).fetch();
+            const deletedUser = await User.destroyOne({ id }).fetch();
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "User Deleted Successfully",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('USER_DELETED'),
                 deletedUser
             });
 
         } catch (error) {
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "error while deleting user",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_USER'),
                 error: error.message,
             });
         }

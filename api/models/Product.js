@@ -37,6 +37,9 @@ module.exports = {
       type: 'string',
       required: true
     },
+    cart : {
+      model: 'Cart'
+    }
     
   },
 

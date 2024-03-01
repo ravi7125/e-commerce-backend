@@ -15,7 +15,10 @@ module.exports = {
             const { name, description, price, quantity, category } = req.body;
 
             if (!name || !description || !price || !quantity || !category) {
-                return res.status(HTTP_STATUS.BAD_REQUEST).send({ error: "All fields are required." });
+                return res.status(HTTP_STATUS.BAD_REQUEST).send({
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('REQUIRED'),
+                });
             }
 
             const uploadedFiles = await new Promise((resolve, reject) => {
@@ -46,8 +49,8 @@ module.exports = {
 
             if (existingProduct) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).send({
-                    success: false,
-                    message: "Product name already exists.",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('ALREADY_EXISTS_PRODUCT_NAME'),
                     existingProduct
                 });
             }
@@ -63,14 +66,14 @@ module.exports = {
             }).fetch();
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "New product created successfully.",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('PRODUCT_CREATED'),
                 product,
             });
         } catch (error) {
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error in creating product.",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_PRODUCT'),
                 error: error.message,
             });
         }
@@ -82,15 +85,15 @@ module.exports = {
                 .find({})
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
+                success: req.i18n.__('SUCCESS_TRUE'),
                 countTotal: products.length,
-                message: "All Products",
+                message: req.i18n.__('FETCHED_PRODUCTS'),
                 products: products,
             });
         } catch (error) {
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error in getting products",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_PRODUCT'),
                 error: error.message,
             });
         }
@@ -103,22 +106,22 @@ module.exports = {
 
             if (!product) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: false,
-                    message: "Product Not Found",
+                    success: req.i18n.__('SUCCESS_FALSE'),
+                    message: req.i18n.__('PRODUCT_NOT_FOUND'),
                 })
             }
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "Single Product Fetched",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('SINGLE_PRODUCT'),
                 product,
             });
 
         } catch (error) {
             console.log(error);
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Eror while getitng single product",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_PRODUCT'),
                 error: error.message,
             });
         }
@@ -128,26 +131,26 @@ module.exports = {
 
         const page = req.query.page || 1; // Current page number
         const perPage = req.query.perPage || 2; // Number of items per page
-    
+
         const skip = (page - 1) * perPage; // Calculate the number of items to skip
         const limit = perPage; // Limit the number of items per page
-    
+
         try {
 
             const products = await Product.find({})
-            .skip(skip)
-            .limit(limit);
-    
-            if(products.length <= 0){
+                .skip(skip)
+                .limit(limit);
+
+            if (products.length <= 0) {
                 res.status(HTTP_STATUS.SUCCESS).send({
-                    success: true,
-                    message: "No Products Found At This Page",
+                    success: req.i18n.__('SUCCESS_TRUE'),
+                    message: req.i18n.__('PRODUCT_NOT_FOUND_PAGE'),
                 });
             }
 
             return res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: `${products.length} Products Fetched At Page ${page}`,
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('FETCHED_PRODUCTS'),
                 users
             });
 
@@ -168,8 +171,8 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error while getting photo",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_PRODUCT'),
                 error,
             });
         }
@@ -177,16 +180,16 @@ module.exports = {
 
     delete: async (req, res) => {
         try {
-            await Product.destroy({ id: req.params.pid });
+            await Product.destroyOne({ id: req.params.pid });
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
-                message: "Product Deleted successfully",
+                success: req.i18n.__('SUCCESS_TRUE'),
+                message: req.i18n.__('PRODUCT_DELETED'),
             });
         } catch (error) {
             console.log(error);
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error while deleting product",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_PRODUCT'),
                 error,
             });
         }
@@ -197,16 +200,16 @@ module.exports = {
             const total = await Product.find({});
 
             res.status(HTTP_STATUS.SUCCESS).send({
-                success: true,
+                success: req.i18n.__('SUCCESS_TRUE'),
                 total: total.length,
                 allProducts: total,
             });
         } catch (error) {
             console.log(error);
-            res.status(HTTP_STATUS.BAD_REQUEST).send({
-                message: "Error in product count",
+            res.status(HTTP_STATUS.SERVER_ERROR).send({
+                message: req.i18n.__('SERVER_ERROR_PRODUCT'),
                 error: error.message,
-                success: false,
+                success: req.i18n.__('SUCCESS_FALSE'),
             });
         }
     },
@@ -227,8 +230,8 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: false,
-                message: "Error In Search Product API",
+                success: req.i18n.__('SUCCESS_FALSE'),
+                message: req.i18n.__('SERVER_ERROR_PRODUCT'),
                 error: error.message,
             });
         }
