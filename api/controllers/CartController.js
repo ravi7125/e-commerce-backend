@@ -37,45 +37,43 @@ module.exports = {
     addToCart: async function (req, res) {
         try {
             const { cartId, productId } = req.body;
-    
+
             const cart = await Cart.findOne({ id: cartId }).populate('products');
-    
+
             if (!cart) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: req.i18n.__('SUCCESS_FALSE'),
                     message: req.i18n.__('CART_NOT_FOUND'),
                 });
             }
-    
+
             const product = await Product.findOne({ id: productId });
-    
+
             if (!product) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: req.i18n.__('SUCCESS_FALSE'),
                     message: req.i18n.__('PRODUCT_NOT_FOUND'),
                 });
             }
-    
-            console.log("First ", cart.products[1]);
-    
+
             // Ensure the products attribute is initialized as an array
-            // cart.products = cart.products || [];
             cart.products = cart.products.map(product => product.id) || [];
+
             // Add product ID to the cart
             cart.products.push(productId);
-    
+
             // Update the cart with the new product ID
             await Cart.updateOne({ id: cartId }).set({ products: cart.products });
-    
+
             // Fetch updated cart data with populated products
             const updatedCartData = await Cart.findOne({ id: cartId }).populate('products');
-    
+
             return res.status(HTTP_STATUS.SUCCESS).send({
                 success: req.i18n.__('SUCCESS_TRUE'),
                 message: req.i18n.__('ADD_TO_CART'),
                 cartData: updatedCartData
             });
-    
+
         } catch (error) {
             return res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: req.i18n.__('SUCCESS_FALSE'),
@@ -84,7 +82,7 @@ module.exports = {
             });
         }
     },
-    
+
 
     getCart: async function (req, res) {
         try {
@@ -114,30 +112,26 @@ module.exports = {
 
     removeFromCart: async (req, res) => {
         try {
+            const { cartId, productId } = req.body;
 
-            const { cartId, productId } = req.query;
+            const cart = await Cart.findOne({ id: cartId }).populate('products');
 
-            const cart = await Cart.find({ id: cartId }).populate('products');
-    
             if (!cart) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
                     success: req.i18n.__('SUCCESS_FALSE'),
                     message: req.i18n.__('CART_NOT_FOUND'),
                 });
             }
-            cart.products = cart.products?.map(product => product.id) || [];
 
-            console.log(cart.product);
-            // Remove the product with the specified productId from the products array
-            const updatedProducts = cart.products?.filter(product => product.id !== productId);
+            cart.products = cart.products.map(product => product.id) || [];
 
-            // Update the cart with the updated products array
-            // const updatedCart = await Cart.updateOne({ id: cartId }).set({ products: updatedProducts });
+            cart.products.push(productId);
 
+            // Filter out the product with the specified productId from the products array
+            const updatedProducts = cart.products?.filter(product => product !== productId);
 
             await Cart.updateOne({ id: cartId }).set({ products: updatedProducts });
-    
-            // Fetch updated cart data with populated products
+
             const updatedCart = await Cart.findOne({ id: cartId }).populate('products');
 
             return res.status(HTTP_STATUS.SUCCESS).send({
@@ -145,6 +139,7 @@ module.exports = {
                 message: req.i18n.__('REMOVE_FROM_CART'),
                 updatedCart
             });
+
         } catch (error) {
             return res.status(HTTP_STATUS.SERVER_ERROR).send({
                 success: req.i18n.__('SUCCESS_FALSE'),
