@@ -21,8 +21,6 @@ module.exports = async (req, res, next) => {
         
         const user = await User.findOne({ id: userId })
 
-        // console.log("User", user);
-
         if (!user) {
             return res.status(404).send({
                 success: false,
