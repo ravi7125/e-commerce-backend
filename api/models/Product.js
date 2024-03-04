@@ -40,7 +40,6 @@ module.exports = {
     carts: {
       collection: 'Cart',
       via: 'products',
-      dominant: true
     }
     
   },
