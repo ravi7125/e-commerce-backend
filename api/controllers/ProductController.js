@@ -45,7 +45,7 @@ module.exports = {
 
             // console.log("File name" + fileName);
 
-            const existingProduct = await Product.findOne({ name });
+            const existingProduct = await Product.findOne({ name }).populate('category');
 
             if (existingProduct) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).send({
@@ -65,10 +65,12 @@ module.exports = {
                 photo: fileName,
             }).fetch();
 
+            const createdProduct = await MyModel.findOne({ id: product.id }).populate('category');
+
             res.status(HTTP_STATUS.SUCCESS).send({
                 success: req.i18n.__('SUCCESS_TRUE'),
                 message: req.i18n.__('PRODUCT_CREATED'),
-                product,
+                createdProduct,
             });
         } catch (error) {
             res.status(HTTP_STATUS.SERVER_ERROR).send({
@@ -82,7 +84,7 @@ module.exports = {
     find: async (req, res) => {
         try {
             const products = await Product
-                .find({})
+                .find({}).populate('category')
 
             res.status(HTTP_STATUS.SUCCESS).send({
                 success: req.i18n.__('SUCCESS_TRUE'),
@@ -102,7 +104,7 @@ module.exports = {
     findOne: async (req, res) => {
         try {
             const product = await Product
-                .findOne({ slug: req.params.slug });
+                .findOne({ slug: req.params.slug }).populate('category');
 
             if (!product) {
                 return res.status(HTTP_STATUS.NOT_FOUND).send({
@@ -138,6 +140,7 @@ module.exports = {
         try {
 
             const products = await Product.find({})
+                .populate('category')
                 .skip(skip)
                 .limit(limit);
 
@@ -197,7 +200,7 @@ module.exports = {
 
     productCount: async (req, res) => {
         try {
-            const total = await Product.find({});
+            const total = await Product.find({}).populate('category');
 
             res.status(HTTP_STATUS.SUCCESS).send({
                 success: req.i18n.__('SUCCESS_TRUE'),
@@ -223,7 +226,7 @@ module.exports = {
                         { name: { contains: keyword } },
                         { description: { contains: keyword } },
                     ],
-                })
+                }).populate('category')
 
             res.json(results);
 

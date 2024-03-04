@@ -26,7 +26,7 @@ module.exports = {
       required: true
     },
     category: {
-      type: 'string',
+      model: 'Category',
       required: true
     },
     quantity: {
