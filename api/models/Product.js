@@ -37,8 +37,10 @@ module.exports = {
       type: 'string',
       required: true
     },
-    cart : {
-      model: 'Cart'
+    carts: {
+      collection: 'Cart',
+      via: 'products',
+      dominant: true
     }
     
   },

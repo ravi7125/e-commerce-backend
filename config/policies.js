@@ -20,16 +20,16 @@ module.exports.policies = {
   // '*': true,
 
   ProductController: {
-    '*': 'isAdmin',
+    '*': 'isAuthenticated',
   },
   UserController: {
-    '*': 'isAdmin',
+    '*': 'isAuthenticated',
     'login': true,
     'signup': true,
     'forgot':true,
   },
   CategoryController: {
-    '*': 'isAdmin',
+    '*':'isAuthenticated',
   },
 
   CartController: {

@@ -15,7 +15,7 @@ module.exports = {
     },
     products: {
       collection: 'Product',
-      via: 'cart'
+      via: 'carts',
     }
 
   },

@@ -65,7 +65,7 @@ module.exports = {
                 photo: fileName,
             }).fetch();
 
-            const createdProduct = await MyModel.findOne({ id: product.id }).populate('category');
+            const createdProduct = await Product.findOne({ id: product.id }).populate('category');
 
             res.status(HTTP_STATUS.SUCCESS).send({
                 success: req.i18n.__('SUCCESS_TRUE'),
