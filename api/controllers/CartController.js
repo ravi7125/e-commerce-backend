@@ -59,11 +59,14 @@ module.exports = {
             // Ensure the products attribute is initialized as an array
             cart.products = cart.products.map(product => product.id) || [];
 
+            await Cart.addToCollection(cartId, 'products', [...cart?.products, productId])
+
+
             // Add product ID to the cart
-            cart.products.push(productId);
+            // cart.products.push(productId);
 
             // Update the cart with the new product ID
-            await Cart.updateOne({ id: cartId }).set({ products: cart.products });
+            // await Cart.updateOne({ id: cartId }).set({ products: cart.products });
 
             // Fetch updated cart data with populated products
             const updatedCartData = await Cart.findOne({ id: cartId }).populate('products');
@@ -125,12 +128,15 @@ module.exports = {
 
             cart.products = cart.products.map(product => product.id) || [];
 
-            cart.products.push(productId);
+            await Cart.removeFromCollection(cartId, 'products', productId)
 
-            // Filter out the product with the specified productId from the products array
-            const updatedProducts = cart.products?.filter(product => product !== productId);
 
-            await Cart.updateOne({ id: cartId }).set({ products: updatedProducts });
+            // cart.products.push(productId);
+
+            // // Filter out the product with the specified productId from the products array
+            // const updatedProducts = cart.products?.filter(product => product !== productId);
+
+            // await Cart.updateOne({ id: cartId }).set({ products: updatedProducts });
 
             const updatedCart = await Cart.findOne({ id: cartId }).populate('products');
 
