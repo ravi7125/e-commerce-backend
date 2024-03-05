@@ -199,17 +199,17 @@ module.exports = {
 
         const page = req.query.page || 1; // Current page number
         const perPage = req.query.perPage || 1; // Number of items per page
-    
+
         const skip = (page - 1) * perPage; // Calculate the number of items to skip
         const limit = perPage; // Limit the number of items per page
-    
+
         try {
 
             const users = await User.find({})
-            .skip(skip)
-            .limit(limit);
-    
-            if(users.length <= 0){
+                .skip(skip)
+                .limit(limit);
+
+            if (users.length <= 0) {
                 res.status(HTTP_STATUS.SUCCESS).send({
                     success: req.i18n.__('SUCCESS_TRUE'),
                     message: req.i18n.__('USER_NOT_FOUND_PAGE'),
@@ -230,7 +230,7 @@ module.exports = {
 
     delete: async (req, res) => {
         try {
-            const id = req.params.id;
+            const { id } = req.params;
 
             const findUser = await User.findOne({ id });
 
@@ -241,12 +241,15 @@ module.exports = {
                 });
             }
 
+            const deletedCart = await Cart.destroyOne({ userid: id }).fetch();
+
             const deletedUser = await User.destroyOne({ id }).fetch();
 
             res.status(HTTP_STATUS.SUCCESS).send({
                 success: req.i18n.__('SUCCESS_TRUE'),
                 message: req.i18n.__('USER_DELETED'),
-                deletedUser
+                deletedCart,
+                deletedUser,
             });
 
         } catch (error) {
