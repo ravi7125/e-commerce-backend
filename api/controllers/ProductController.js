@@ -223,8 +223,8 @@ module.exports = {
             const results = await Product
                 .find({
                     or: [
-                        { name: { contains: keyword } },
-                        { description: { contains: keyword } },
+                        { name: { contains: keyword.toLowerCase() } },
+                        { description: { contains: keyword.toLowerCase() } },
                     ],
                 }).populate('category')
 

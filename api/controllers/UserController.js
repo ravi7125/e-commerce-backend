@@ -241,9 +241,9 @@ module.exports = {
                 });
             }
 
-            const deletedCart = await Cart.destroyOne({ userid: id }).fetch();
+            const deletedCart = await Cart.destroyOne({ userid: id });
 
-            const deletedUser = await User.destroyOne({ id }).fetch();
+            const deletedUser = await User.destroyOne({ id });
 
             res.status(HTTP_STATUS.SUCCESS).send({
                 success: req.i18n.__('SUCCESS_TRUE'),
