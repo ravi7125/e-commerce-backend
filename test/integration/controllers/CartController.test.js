@@ -35,7 +35,7 @@ describe('Testing Cart Controller', () => {
   it('Add Product To Cart', (done) => {
 
     const text = getText();
-    // const productData = getProductData();
+    const productData = getProductData();
 
     supertest(sails.hooks.http.app)
       .post('/api/cart/add-to-cart')
