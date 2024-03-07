@@ -21,8 +21,8 @@ module.exports.policies = {
 
   ProductController: {
     '*': 'isAuthenticated',
-   'create': 'isAdmin',
-   'delete': 'isAdmin',
+    'create': 'isAdmin',
+    'delete': 'isAdmin',
   },
   UserController: {
     '*': 'isAuthenticated',
@@ -31,7 +31,7 @@ module.exports.policies = {
     'signup': true,
     'forgot':true,
     'findOne': true,
-    'find': true
+    'find': true,
   },
   CategoryController: {
     '*':'isAuthenticated',
@@ -39,7 +39,7 @@ module.exports.policies = {
     'delete': 'isAdmin',
     'update': 'isAdmin',
   },
-  
+
   CartController: {
     '*': 'isAuthenticated',
     'getCart': true,

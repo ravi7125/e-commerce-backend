@@ -26,15 +26,15 @@
 // > Note: This is not required in order to lift, but it is a convenient default.
 process.chdir(__dirname);
 
-
-
 // Attempt to import `sails` dependency, as well as `rc` (for loading `.sailsrc` files).
 var sails;
 var rc;
 try {
   sails = require('sails');
   rc = require('sails/accessible/rc');
-  require('dotenv').config();
+  // require('dotenv').config();
+  var dotenv = require('dotenv');
+  dotenv.config();
 
 } catch (err) {
   console.error('Encountered an error when attempting to require(\'sails\'):');

@@ -5,261 +5,263 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-
-
-
-const { bcrypt, jwt, HTTP_STATUS } = require('../../config/constants')
+const { bcrypt, jwt, HTTP_STATUS } = require('../../config/constants');
 
 module.exports = {
 
-    signup: async (req, res) => {
+  signup: async (req, res) => {
 
-        try {
-            const { username, email, password, answer, address, role } = req.body;
+    try {
+      const { username, email, password, answer, address, role } = req.body;
 
-            const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
+      if (!username || !email || !password || !answer || !address) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).send({
+          message: req.i18n.__('REQUIRED')
+        });
+      }
 
-            if (!username || !email || !password || !answer || !address) {
-                return res.status(HTTP_STATUS.BAD_REQUEST).send({
-                    message: req.i18n.__('REQUIRED')
-                })
-            }
+      const existingUser = await User.findOne({ email });
 
-            const existingUser = await User.findOne({ email })
+      if (existingUser) {
+        return res.status(HTTP_STATUS.ALREADY_EXISTS).send({
+          success: req.i18n.__('SUCCESS_FALSE'),
+          message: req.i18n.__('ALREADY_EXISTS_EMAIL'),
+        });
+      }
 
-            if (existingUser) {
-                return res.status(HTTP_STATUS.ALREADY_EXISTS).send({
-                    success: req.i18n.__('SUCCESS_FALSE'),
-                    message: req.i18n.__('ALREADY_EXISTS_EMAIL'),
-                })
-            }
+      const user = await User.create({ username, email, password: hashedPassword, answer, role, address });
 
-            const user = await User.create({ username, email, password: hashedPassword, answer, role, address })
+      return res.status(HTTP_STATUS.SUCCESS).send({
+        success: req.i18n.__('SUCCESS_TRUE'),
+        message: req.i18n.__('SIGNUP'),
+        user
+      });
 
-            return res.status(HTTP_STATUS.SUCCESS).send({
-                success: req.i18n.__('SUCCESS_TRUE'),
-                message: req.i18n.__('SIGNUP'),
-                user
-            })
+    } catch (error) {
+      return res.status(HTTP_STATUS.SERVER_ERROR).send({
+        success: req.i18n.__('SUCCESS_FALSE'),
+        message: req.i18n.__('SERVER_ERROR_USER'),
+        error: error.message,
+      });
 
-        } catch (error) {
-            return res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: req.i18n.__('SUCCESS_FALSE'),
-                message: req.i18n.__('SERVER_ERROR_USER'),
-                error: error.message,
-            })
+    }
 
-        }
+  },
 
-    },
+  login: async (req, res) => {
 
-    login: async (req, res) => {
+    try {
+      const { email, password } = req.body;
 
-        try {
-            const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).send({
+          message: req.i18n.__('REQUIRED')
+        });
+      }
 
-            const existingUser = await User.findOne({ email })
+      const existingUser = await User.findOne({ email });
 
-            if (!existingUser) {
-                return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: req.i18n.__('SUCCESS_FALSE'),
-                    message: req.i18n.__('USER_NOT_FOUND'),
-                })
+      if (!existingUser) {
+        return res.status(HTTP_STATUS.NOT_FOUND).send({
+          success: req.i18n.__('SUCCESS_FALSE'),
+          message: req.i18n.__('USER_NOT_FOUND'),
+        });
 
-            }
+      }
 
-            const match = await bcrypt.compare(password, existingUser.password)
+      const match = await bcrypt.compare(password, existingUser.password);
 
-            if (!match) {
-                return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: req.i18n.__('SUCCESS_FALSE'),
-                    message: req.i18n.__('INVALID_PASSWORD'),
-                })
-            }
+      if (!match) {
+        return res.status(HTTP_STATUS.NOT_FOUND).send({
+          success: req.i18n.__('SUCCESS_FALSE'),
+          message: req.i18n.__('INVALID_PASSWORD'),
+        });
+      }
 
-            const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' })
+      const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' });
 
-            return res.status(HTTP_STATUS.SUCCESS).send({
-                success: req.i18n.__('SUCCESS_TRUE'),
-                message: req.i18n.__('LOGIN'),
-                user: {
-                    id: existingUser.id,
-                    username: existingUser.username,
-                    email: existingUser.email,
-                },
-                token,
-            })
-
-
-        } catch (error) {
-            return res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: req.i18n.__('SUCCESS_FALSE'),
-                message: req.i18n.__('SERVER_ERROR_USER'),
-                error: error.message,
-            })
-
-        }
-
-    },
-
-    forgot: async (req, res) => {
-
-        try {
-
-            const { email, answer, newPassword } = req.body;
-
-            if (!email || !answer || !newPassword) {
-                return res.send({
-                    message: req.i18n.__('REQUIRED')
-                })
-            }
-
-            const user = await User.findOne({ email, answer })
-
-            if (!user) {
-                return res.status(HTTP_STATUS.BAD_REQUEST).send({
-                    success: req.i18n.__('SUCCESS_FALSE'),
-                    message: req.i18n.__('INVALID_CREDENTIALS')
-                })
-            }
-
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-            const newData = await User.update({ password: user.password }).set({ password: hashedPassword })
-
-            return res.status(HTTP_STATUS.SUCCESS).send({
-                success: req.i18n.__('SUCCESS_TRUE'),
-                message: req.i18n.__('PASSWORD_RESETED'),
-            })
+      return res.status(HTTP_STATUS.SUCCESS).send({
+        success: req.i18n.__('SUCCESS_TRUE'),
+        message: req.i18n.__('LOGIN'),
+        user: {
+          id: existingUser.id,
+          username: existingUser.username,
+          email: existingUser.email,
+        },
+        token,
+      });
 
 
-        } catch (error) {
-            return res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: req.i18n.__('SUCCESS_FALSE'),
-                message: req.i18n.__('SERVER_ERROR_USER'),
-                error
-            })
+    } catch (error) {
+      return res.status(HTTP_STATUS.SERVER_ERROR).send({
+        success: req.i18n.__('SUCCESS_FALSE'),
+        message: req.i18n.__('SERVER_ERROR_USER'),
+        error: error.message,
+      });
 
-        }
+    }
 
-    },
+  },
 
-    find: async (req, res) => {
-        try {
+  forgot: async (req, res) => {
 
-            const users = await User.find({})
+    try {
 
-            res.status(HTTP_STATUS.SUCCESS).send({
-                success: req.i18n.__('SUCCESS_TRUE'),
-                countTotal: users.length,
-                message: req.i18n.__('FETCHED_USRES'),
-                users,
-            });
-        } catch (error) {
-            res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: req.i18n.__('SUCCESS_FALSE'),
-                message: req.i18n.__('SERVER_ERROR_USER'),
-                error: error.message,
-            });
-        }
-    },
+      const { email, answer, newPassword } = req.body;
 
-    findOne: async (req, res) => {
-        try {
+      if (!email || !answer || !newPassword) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).send({
+          message: req.i18n.__('REQUIRED')
+        });
+      }
 
-            const id = req.params.id;
+      const user = await User.findOne({ email, answer });
 
-            const user = await User.findOne({ id });
+      if (!user) {
+        return res.status(HTTP_STATUS.NOT_FOUND).send({
+          success: req.i18n.__('SUCCESS_FALSE'),
+          message: req.i18n.__('INVALID_CREDENTIALS')
+        });
+      }
 
-            if (!user) {
-                return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: req.i18n.__('SUCCESS_FALSE'),
-                    message: req.i18n.__('USER_NOT_FOUND'),
-                });
-            }
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-            res.status(HTTP_STATUS.SUCCESS).send({
-                success: req.i18n.__('SUCCESS_TRUE'),
-                message: req.i18n.__('SINGLE_USER'),
-                user,
-            });
+      await User.update({ password: user.password }).set({ password: hashedPassword });
 
-        } catch (error) {
-            res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: req.i18n.__('SUCCESS_FALSE'),
-                message: req.i18n.__('SERVER_ERROR_USER'),
-                error: error.message,
-            });
-        }
-    },
+      return res.status(HTTP_STATUS.SUCCESS).send({
+        success: req.i18n.__('SUCCESS_TRUE'),
+        message: req.i18n.__('PASSWORD_RESETED'),
+      });
 
 
-    listUsers: async (req, res) => {
+    } catch (error) {
+      return res.status(HTTP_STATUS.SERVER_ERROR).send({
+        success: req.i18n.__('SUCCESS_FALSE'),
+        message: req.i18n.__('SERVER_ERROR_USER'),
+        error
+      });
 
-        const page = req.query.page || 1; // Current page number
-        const perPage = req.query.perPage || 1; // Number of items per page
+    }
 
-        const skip = (page - 1) * perPage; // Calculate the number of items to skip
-        const limit = perPage; // Limit the number of items per page
+  },
 
-        try {
+  find: async (req, res) => {
+    try {
 
-            const users = await User.find({})
+      const users = await User.find({});
+
+      res.status(HTTP_STATUS.SUCCESS).send({
+        success: req.i18n.__('SUCCESS_TRUE'),
+        countTotal: users.length,
+        message: req.i18n.__('FETCHED_USRES'),
+        users,
+      });
+    } catch (error) {
+      res.status(HTTP_STATUS.SERVER_ERROR).send({
+        success: req.i18n.__('SUCCESS_FALSE'),
+        message: req.i18n.__('SERVER_ERROR_USER'),
+        error: error.message,
+      });
+    }
+  },
+
+  findOne: async (req, res) => {
+    try {
+
+      const id = req.params.id;
+
+      const user = await User.findOne({ id });
+
+      if (!user) {
+        return res.status(HTTP_STATUS.NOT_FOUND).send({
+          success: req.i18n.__('SUCCESS_FALSE'),
+          message: req.i18n.__('USER_NOT_FOUND'),
+        });
+      }
+
+      res.status(HTTP_STATUS.SUCCESS).send({
+        success: req.i18n.__('SUCCESS_TRUE'),
+        message: req.i18n.__('SINGLE_USER'),
+        user,
+      });
+
+    } catch (error) {
+      res.status(HTTP_STATUS.SERVER_ERROR).send({
+        success: req.i18n.__('SUCCESS_FALSE'),
+        message: req.i18n.__('SERVER_ERROR_USER'),
+        error: error.message,
+      });
+    }
+  },
+
+
+  listUsers: async (req, res) => {
+
+    const page = req.query.page || 1; // Current page number
+    const perPage = req.query.perPage || 1; // Number of items per page
+
+    const skip = (page - 1) * perPage; // Calculate the number of items to skip
+    const limit = perPage; // Limit the number of items per page
+
+    try {
+
+      const users = await User.find({})
                 .skip(skip)
                 .limit(limit);
 
-            if (users.length <= 0) {
-                res.status(HTTP_STATUS.SUCCESS).send({
-                    success: req.i18n.__('SUCCESS_TRUE'),
-                    message: req.i18n.__('USER_NOT_FOUND_PAGE'),
-                });
-            }
+      if (users.length <= 0) {
+        res.status(HTTP_STATUS.SUCCESS).send({
+          success: req.i18n.__('SUCCESS_TRUE'),
+          message: req.i18n.__('USER_NOT_FOUND_PAGE'),
+        });
+      }
 
-            return res.status(HTTP_STATUS.SUCCESS).send({
-                success: req.i18n.__('SUCCESS_TRUE'),
-                message: req.i18n.__('FETCHED_USERS'),
-                users
-            });
+      return res.status(HTTP_STATUS.SUCCESS).send({
+        success: req.i18n.__('SUCCESS_TRUE'),
+        message: req.i18n.__('FETCHED_USERS'),
+        users
+      });
 
-        } catch (error) {
-            return res.serverError(error);
-        }
-    },
+    } catch (error) {
+      return res.serverError(error);
+    }
+  },
 
 
-    delete: async (req, res) => {
-        try {
-            const { id } = req.params;
+  delete: async (req, res) => {
+    try {
+      const { id } = req.params;
 
-            const findUser = await User.findOne({ id });
+      const findUser = await User.findOne({ id });
 
-            if (!findUser) {
-                return res.status(HTTP_STATUS.NOT_FOUND).send({
-                    success: req.i18n.__('SUCCESS_FALSE'),
-                    message: req.i18n.__('USER_NOT_FOUND'),
-                });
-            }
+      if (!findUser) {
+        return res.status(HTTP_STATUS.NOT_FOUND).send({
+          success: req.i18n.__('SUCCESS_FALSE'),
+          message: req.i18n.__('USER_NOT_FOUND'),
+        });
+      }
 
-            const deletedCart = await Cart.destroyOne({ userid: id });
+      const deletedCart = await Cart.destroyOne({ userid: id });
 
-            const deletedUser = await User.destroyOne({ id });
+      const deletedUser = await User.destroyOne({ id });
 
-            res.status(HTTP_STATUS.SUCCESS).send({
-                success: req.i18n.__('SUCCESS_TRUE'),
-                message: req.i18n.__('USER_DELETED'),
-                deletedCart,
-                deletedUser,
-            });
+      res.status(HTTP_STATUS.SUCCESS).send({
+        success: req.i18n.__('SUCCESS_TRUE'),
+        message: req.i18n.__('USER_DELETED'),
+        deletedCart,
+        deletedUser,
+      });
 
-        } catch (error) {
-            res.status(HTTP_STATUS.SERVER_ERROR).send({
-                success: req.i18n.__('SUCCESS_FALSE'),
-                message: req.i18n.__('SERVER_ERROR_USER'),
-                error: error.message,
-            });
-        }
-    },
+    } catch (error) {
+      res.status(HTTP_STATUS.SERVER_ERROR).send({
+        success: req.i18n.__('SUCCESS_FALSE'),
+        message: req.i18n.__('SERVER_ERROR_USER'),
+        error: error.message,
+      });
+    }
+  },
 
 };
 

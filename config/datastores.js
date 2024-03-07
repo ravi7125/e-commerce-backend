@@ -54,7 +54,6 @@ module.exports.datastores = {
     adapter: 'sails-mongo',
     url: process.env.MONGO_URL,
 
-
   },
 
 

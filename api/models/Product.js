@@ -41,7 +41,7 @@ module.exports = {
       collection: 'Cart',
       via: 'products',
     }
-    
+
   },
 
 };

@@ -10,7 +10,7 @@ module.exports = {
   attributes: {
 
     userid: {
-      model: 'User', 
+      model: 'User',
       required: true
     },
     products: {
