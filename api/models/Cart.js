@@ -18,7 +18,6 @@ module.exports = {
       via: 'carts',
       dominant: true
     }
-
   },
 
 };
