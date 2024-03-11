@@ -100,6 +100,7 @@ describe('Testing Product Controller', () => {
   });
 
 });
+
 module.exports = {
   getProductData: () => productData
 };
