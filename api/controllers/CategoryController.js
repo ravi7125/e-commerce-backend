@@ -78,7 +78,7 @@ module.exports = {
       const category = await Category.find({});
       res.status(HTTP_STATUS.SUCCESS).send({
         success: req.i18n.__('SUCCESS_TRUE'),
-        message: req.i18n.__('FETCHED_CATEGORY'),
+        message: req.i18n.__('FETCHED_CATEGORIES'),
         category,
       });
     } catch (error) {

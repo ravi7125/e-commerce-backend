@@ -1,9 +1,12 @@
 {
 	"ACCESS_DENIED": "Access denied. No token provided",
 	"REQUIRED": "All Fields are Required",
+	"TOKEN_REQUIRED": "Token Required!!",
 	"INVALID_TOKEN": "Token is not valid",
 	"INVALID_PASSWORD": "Invalid Password!",
 	"INVALID_CREDENTIALS": "Invalid Credentials!, Please Check again",
+	"UNAUTHORIZED_ACCESS": "Unauthorized Access, You are not Admin",
+	"NOT FOUND": "Not Found",
 	"USER_NOT_FOUND": "User not found, Please Sign up!",
 	"USER_NOT_FOUND_PAGE": "No User Found At this Page",
 	"PRODUCT_NOT_FOUND": "Product not found",
@@ -39,11 +42,6 @@
 	"PRODUCT_DELETED": "Product Deleted Successfully",
 	"CATEGORY_DELETED": "Category Deleted Successfully",
 	"REMOVE_FROM_CART": "Product Remove from Cart Successfully",
-	"ALREADY_EXIST_PRODUCT_NAME": "ALREADY_EXIST_PRODUCT_NAME",
-	"FETCHED_USRES": "FETCHED_USRES",
 	"SUCCESS_TRUE": true,
-	"SUCCESS_FALSE": false,
-	"FETCHED_CATEGORY": "FETCHED_CATEGORY",
-	"LOGIN_SUCCESS": "LOGIN_SUCCESS",
-	"Not Found": "Not Found"
+	"SUCCESS_FALSE": false
 }

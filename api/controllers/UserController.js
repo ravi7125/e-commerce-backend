@@ -28,6 +28,7 @@ module.exports = {
         return res.status(HTTP_STATUS.ALREADY_EXISTS).send({
           success: req.i18n.__('SUCCESS_FALSE'),
           message: req.i18n.__('ALREADY_EXISTS_EMAIL'),
+          existingUser
         });
       }
 

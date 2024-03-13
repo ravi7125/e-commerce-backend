@@ -1,21 +1,15 @@
-const jwt = require('jsonwebtoken');
+const { jwt,HTTP_STATUS } = require('../../config/constants');
 
 module.exports = async (req, res, next) => {
   try {
     const token = req.headers.authorization || req.headers.Authorization; // Extract token from Authorization header
 
     if (!token) {
-      return res.status(401).send({
-        message: 'Login required!!',
-        error: [
-          'No token provided',
-          'Please provide a token in the headers with \'Authorization\' key'
-        ]
+      return res.status(HTTP_STATUS.UNAUTHORIZED).send({
+        message: req.i18n.__('TOKEN_REQUIRED'),
       });
     }
-
     // Verify JWT token
-    // const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     const userId = decodedToken.id;
@@ -23,16 +17,16 @@ module.exports = async (req, res, next) => {
     const user = await User.findOne({ id: userId });
 
     if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: 'User Not Found!',
+      return res.status(HTTP_STATUS.NOT_FOUND).send({
+        success: req.i18n.__('SUCCESS_FALSE'),
+        message: req.i18n.__('USER_NOT_FOUND'),
       });
     }
 
     if (user.role !== 1) {
-      return res.status(401).send({
-        success: false,
-        message: 'UnAuthorized Access, You Not Admin'
+      return res.status(HTTP_STATUS.UNAUTHORIZED).send({
+        success: req.i18n.__('SUCCESS_FALSE'),
+        message: req.i18n.__('UNAUTHORIZED_ACCESS')
       });
     }
 
@@ -40,9 +34,9 @@ module.exports = async (req, res, next) => {
 
   } catch (error) {
     console.log(error);
-    res.status(401).send({
-      success: false,
-      message: 'Error in Admin Middleware',
+    res.status(HTTP_STATUS.BAD_REQUEST).send({
+      success: req.i18n.__('SUCCESS_FALSE'),
+      message: req.i18n.__('INVALID_TOKEN'),
       error: error.message
     });
   }
